@@ -22,7 +22,8 @@ you can use the top-level `Backtrace` type.
 ```rust
 use backtrace::Backtrace;
 
-fn main() {
+fn main()
+{
     let bt = Backtrace::new();
 
     // do_some_work();
@@ -35,23 +36,34 @@ If, however, you'd like more raw access to the actual tracing functionality, you
 can use the `trace` and `resolve` functions directly.
 
 ```rust
-fn main() {
-    backtrace::trace(|frame| {
-        let ip = frame.ip();
-        let symbol_address = frame.symbol_address();
+fn main() \
+{
+ 	backtrace::trace
+    (
+        |frame|
+		{
+    	    let ip = frame.ip();
+    	    let symbol_address = frame.symbol_address();
 
-        // Resolve this instruction pointer to a symbol name
-        backtrace::resolve_frame(frame, |symbol| {
-            if let Some(name) = symbol.name() {
-                // ...
-            }
-            if let Some(filename) = symbol.filename() {
-                // ...
-            }
-        });
+    	    // Resolve this instruction pointer to a symbol name
+    	    backtrace::resolve_frame
+    	    (
+    	      	frame, |symbol|
+    	     	{
+    	        	if let Some(name) = symbol.name()
+    	            {
+    	            // ...
+    	        	}
+    	        	if let Some(filename) = symbol.filename()
+    	            {
+    	            // ...
+    	        	}
+    	    	}
+    	    );
 
-        true // keep going to the next frame
-    });
+    	    true // keep going to the next frame
+    	}
+    );
 }
 ```
 
@@ -71,10 +83,10 @@ This policy takes precedence over versions written anywhere else in this repo.
 
 This project is licensed under either of
 
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
-   https://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or
-   https://opensource.org/licenses/MIT)
+* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
+  https://www.apache.org/licenses/LICENSE-2.0)
+* MIT license ([LICENSE-MIT](LICENSE-MIT) or
+  https://opensource.org/licenses/MIT)
 
 at your option.
 
