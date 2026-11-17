@@ -38,31 +38,31 @@ can use the `trace` and `resolve` functions directly.
 ```rust
 fn main()
 {
- 	backtrace::trace
-	(
+    backtrace::trace
+    (
         |frame|
-		{
-    	    let ip = frame.ip();
-    	    let symbol_address = frame.symbol_address();
+        {
+            let ip = frame.ip();
+            let symbol_address = frame.symbol_address();
 
-    	    // Resolve this instruction pointer to a symbol name
-    	    backtrace::resolve_frame
-			(
-    	      	frame, |symbol|
-				{
-    	        	if let Some(name) = symbol.name()
-					{
-    	            // ...
-    	        	}
-    	        	if let Some(filename) = symbol.filename()
-					{
-    	            // ...
-    	        	}
-				}
-    	    );
+            // Resolve this instruction pointer to a symbol name
+            backtrace::resolve_frame
+            (
+                frame, |symbol|
+                {
+                    if let Some(name) = symbol.name()
+                    {
+                        // ...
+                    }
+                    if let Some(filename) = symbol.filename()
+                    {
+                        // ...
+                    }
+                }
+            );
 
-    	    true // keep going to the next frame
-    	}
+            true // keep going to the next frame
+        }
     );
 }
 ```
