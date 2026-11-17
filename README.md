@@ -36,10 +36,10 @@ If, however, you'd like more raw access to the actual tracing functionality, you
 can use the `trace` and `resolve` functions directly.
 
 ```rust
-fn main() \
+fn main()
 {
  	backtrace::trace
-    (
+	(
         |frame|
 		{
     	    let ip = frame.ip();
@@ -47,18 +47,18 @@ fn main() \
 
     	    // Resolve this instruction pointer to a symbol name
     	    backtrace::resolve_frame
-    	    (
+			(
     	      	frame, |symbol|
-    	     	{
+				{
     	        	if let Some(name) = symbol.name()
-    	            {
+					{
     	            // ...
     	        	}
     	        	if let Some(filename) = symbol.filename()
-    	            {
+					{
     	            // ...
     	        	}
-    	    	}
+				}
     	    );
 
     	    true // keep going to the next frame
