@@ -1,5 +1,3 @@
 use backtrace::Backtrace;
 
-fn main() {
-    println!("{:?}", Backtrace::new());
-}
+fn main() { println ! ("{:?}", Backtrace::new ()); }

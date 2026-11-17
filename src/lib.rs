@@ -86,10 +86,7 @@
 
 #![deny(missing_docs)]
 #![no_std]
-#![cfg_attr(
-    all(feature = "std", target_env = "sgx", target_vendor = "fortanix"),
-    feature(sgx_platform)
-)]
+#![cfg_attr(all(feature = "std", target_env = "sgx", target_vendor = "fortanix"), feature(sgx_platform))]
 #![warn(rust_2018_idioms)]
 // When we're building as part of libstd, silence all warnings since they're
 // irrelevant as this crate is developed out-of-tree.
@@ -105,60 +102,69 @@ extern crate std;
 #[allow(unused_extern_crates)]
 extern crate alloc;
 
-pub use self::backtrace::{Frame, trace_unsynchronized};
+pub use self::backtrace:: { Frame, trace_unsynchronized };
+
 mod backtrace;
 
 pub use self::symbolize::resolve_frame_unsynchronized;
-pub use self::symbolize::{Symbol, SymbolName, resolve_unsynchronized};
+pub use self::symbolize:: { Symbol, SymbolName, resolve_unsynchronized };
+
 mod symbolize;
 
 pub use self::types::BytesOrWideString;
+
 mod types;
 
 #[cfg(feature = "std")]
 pub use self::symbolize::clear_symbol_cache;
 
 mod print;
-pub use print::{BacktraceFmt, BacktraceFrameFmt, PrintFmt};
+pub use print:: { BacktraceFmt, BacktraceFrameFmt, PrintFmt };
 
-cfg_if::cfg_if! {
-    if #[cfg(feature = "std")] {
+cfg_if::cfg_if!
+{
+    if #[cfg(feature = "std")]
+    {
         pub use self::backtrace::trace;
-        pub use self::symbolize::{resolve, resolve_frame};
-        pub use self::capture::{Backtrace, BacktraceFrame, BacktraceSymbol};
+        pub use self::symbolize:: { resolve, resolve_frame };
+        pub use self::capture:: { Backtrace, BacktraceFrame, BacktraceSymbol };
         mod capture;
     }
 }
 
-cfg_if::cfg_if! {
-    if #[cfg(all(target_env = "sgx", target_vendor = "fortanix", not(feature = "std")))] {
-        pub use self::backtrace::set_image_base;
-    }
-}
+cfg_if::cfg_if! { if #[cfg(all(target_env = "sgx", target_vendor = "fortanix", not(feature = "std")))] { pub use self::backtrace::set_image_base; } }
 
 #[cfg(feature = "std")]
-mod lock {
+mod lock
+{
     use std::cell::Cell;
-    use std::sync::{Mutex, MutexGuard};
+    use std::sync:: { Mutex, MutexGuard };
 
     /// A "Maybe" LockGuard
-    pub struct LockGuard(Option<MutexGuard<'static, ()>>);
+    pub struct LockGuard(Option < MutexGuard < 'static, () >>);
 
     /// The global lock
-    static LOCK: Mutex<()> = Mutex::new(());
+    static LOCK: Mutex < () > = Mutex:: new (());
     // Whether this thread is the one that holds the lock
-    thread_local!(static LOCK_HELD: Cell<bool> = const { Cell::new(false) });
+    thread_local!(static LOCK_HELD: Cell < bool > = const { Cell::new (false) });
 
-    impl Drop for LockGuard {
-        fn drop(&mut self) {
+    impl Drop for LockGuard
+    {
+        fn drop( & mut self)
+        {
             // Don't do anything if we're a LockGuard(None)
-            if self.0.is_some() {
-                LOCK_HELD.with(|slot| {
-                    // Immediately crash if we somehow aren't the thread holding this lock
-                    assert!(slot.get());
-                    // We are no longer the thread holding this lock
-                    slot.set(false);
-                });
+            if self.0 .is_some()
+            {
+                LOCK_HELD.with
+                (
+                    | slot |
+                    {
+                        // Immediately crash if we somehow aren't the thread holding this lock
+                        assert!(slot.get ());
+                        // We are no longer the thread holding this lock
+                        slot. set(false);
+                    }
+                );
             }
             // lock implicitly released here, if we're a LockGuard(Some(..))
         }
@@ -214,28 +220,23 @@ mod lock {
     /// the `*_unsynchronized` backtrace APIs. This is "fine" because
     /// it wraps its own calls to backtrace in a non-reentrant Mutex
     /// that prevents two backtraces from getting interleaved during printing.
-    pub fn lock() -> LockGuard {
+    pub fn lock() -> LockGuard
+    {
         // If we're the thread holding this lock, pretend to acquire the lock
         // again by returning a LockGuard(None)
-        if LOCK_HELD.with(|l| l.get()) {
-            return LockGuard(None);
-        }
+        if LOCK_HELD.with( | l | l.get ()) { return LockGuard(None); }
         // Insist that we totally are the thread holding the lock
         // (our thread will block until we are)
-        LOCK_HELD.with(|s| s.set(true));
+        LOCK_HELD.with( | s | s.set (true));
         // ok *actually* try to acquire the lock, blocking as necessary
         LockGuard(Some(LOCK.lock().unwrap()))
     }
 }
 
-#[cfg(all(
-    windows,
-    any(
-        target_env = "msvc",
-        all(target_env = "gnu", any(target_arch = "x86", target_arch = "arm"))
-    ),
-    not(target_vendor = "uwp")
-))]
+#
+[
+    cfg(all(windows, any(target_env = "msvc", all(target_env = "gnu", any(target_arch = "x86", target_arch = "arm"))), not(target_vendor = "uwp")))
+]
 mod dbghelp;
 // Auto-generated by windows-bindgen/riddle
 #[cfg(any(windows, target_os = "cygwin"))]

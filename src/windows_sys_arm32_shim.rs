@@ -3,22 +3,16 @@ pub const ARM_MAX_WATCHPOINTS: usize = 1;
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct NEON128 {
-    pub Low: u64,
-    pub High: i64,
-}
+pub struct NEON128 { pub Low: u64, pub High: i64, }
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub union CONTEXT_FloatRegs {
-    pub Q: [NEON128; 16],
-    pub D: [u64; 32],
-    pub S: [u32; 32],
-}
+pub union CONTEXT_FloatRegs { pub Q: [NEON128; 16], pub D: [u64; 32], pub S: [u32; 32], }
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct CONTEXT {
+pub struct CONTEXT
+{
     pub ContextFlags: u32,
     pub R0: u32,
     pub R1: u32,

@@ -1,14 +1,7 @@
 #include <stdio.h>
 
-namespace space {
-    template <typename FuncT>
-    void templated_trampoline(FuncT func) {
-        func();
-    }
-}
+namespace space { template <typename FuncT> void templated_trampoline(FuncT func) { func(); } }
 
-typedef void (*FuncPtr)();
+typedef void( * FuncPtr)();
 
-extern "C" void cpp_trampoline(FuncPtr func) {
-    space::templated_trampoline(func);
-}
+extern "C" void cpp_trampoline(FuncPtr func) { space::templated_trampoline(func); }

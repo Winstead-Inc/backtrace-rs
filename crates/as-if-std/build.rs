@@ -1,3 +1,1 @@
-fn main() {
-    println!("cargo:rustc-cfg=backtrace_in_libstd");
-}
+fn main() { println ! ("cargo:rustc-cfg=backtrace_in_libstd"); }

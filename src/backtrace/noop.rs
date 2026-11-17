@@ -8,25 +8,18 @@ use core::ptr::null_mut;
 // avoid having to allow `unused_unsafe` since other implementations are
 // unsafe.
 #[inline(always)]
-pub unsafe fn trace(_cb: &mut dyn FnMut(&super::Frame) -> bool) {}
+pub unsafe fn trace(_cb: & mut dyn FnMut( & super::Frame) -> bool) {}
 
 #[derive(Clone)]
 pub struct Frame;
 
-impl Frame {
-    pub fn ip(&self) -> *mut c_void {
-        null_mut()
-    }
+impl Frame
+{
+    pub fn ip( & self) -> * mut c_void { null_mut() }
 
-    pub fn sp(&self) -> *mut c_void {
-        null_mut()
-    }
+    pub fn sp( & self) -> * mut c_void { null_mut() }
 
-    pub fn symbol_address(&self) -> *mut c_void {
-        null_mut()
-    }
+    pub fn symbol_address( & self) -> * mut c_void { null_mut() }
 
-    pub fn module_base_address(&self) -> Option<*mut c_void> {
-        None
-    }
+    pub fn module_base_address( & self) -> Option< * mut c_void> { None }
 }

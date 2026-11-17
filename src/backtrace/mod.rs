@@ -48,10 +48,7 @@ use core::fmt;
 /// }
 /// ```
 #[cfg(feature = "std")]
-pub fn trace<F: FnMut(&Frame) -> bool>(cb: F) {
-    let _guard = crate::lock::lock();
-    unsafe { trace_unsynchronized(cb) }
-}
+pub fn trace < F: FnMut( & Frame) -> bool > (cb: F) { let _guard = crate::lock::lock(); unsafe { trace_unsynchronized(cb) } }
 
 /// Same as `trace`, only unsafe as it's unsynchronized.
 ///
@@ -62,9 +59,7 @@ pub fn trace<F: FnMut(&Frame) -> bool>(cb: F) {
 /// # Panics
 ///
 /// See information on `trace` for caveats on `cb` panicking.
-pub unsafe fn trace_unsynchronized<F: FnMut(&Frame) -> bool>(mut cb: F) {
-    unsafe { trace_imp(&mut cb) }
-}
+pub unsafe fn trace_unsynchronized < F: FnMut( & Frame) -> bool > (mut cb: F) { unsafe { trace_imp( & mut cb) } }
 
 /// A trait representing one frame of a backtrace, yielded to the `trace`
 /// function of this crate.
@@ -73,11 +68,10 @@ pub unsafe fn trace_unsynchronized<F: FnMut(&Frame) -> bool>(mut cb: F) {
 /// virtually dispatched as the underlying implementation is not always known
 /// until runtime.
 #[derive(Clone)]
-pub struct Frame {
-    pub(crate) inner: FrameImp,
-}
+pub struct Frame { pub (crate) inner: FrameImp, }
 
-impl Frame {
+impl Frame
+{
     /// Returns the current instruction pointer of this frame.
     ///
     /// This is normally the next instruction to execute in the frame, but not
@@ -86,17 +80,13 @@ impl Frame {
     ///
     /// It is recommended to pass this value to `backtrace::resolve` to turn it
     /// into a symbol name.
-    pub fn ip(&self) -> *mut c_void {
-        self.inner.ip()
-    }
+    pub fn ip( & self) -> * mut c_void { self.inner.ip() }
 
     /// Returns the current stack pointer of this frame.
     ///
     /// In the case that a backend cannot recover the stack pointer for this
     /// frame, a null pointer is returned.
-    pub fn sp(&self) -> *mut c_void {
-        self.inner.sp()
-    }
+    pub fn sp( & self) -> * mut c_void { self.inner.sp() }
 
     /// Returns the starting symbol address of the frame of this function.
     ///
@@ -106,101 +96,80 @@ impl Frame {
     ///
     /// The returned value can sometimes be used if `backtrace::resolve` failed
     /// on the `ip` given above.
-    pub fn symbol_address(&self) -> *mut c_void {
-        self.inner.symbol_address()
-    }
+    pub fn symbol_address( & self) -> * mut c_void { self.inner.symbol_address() }
 
     /// Returns the base address of the module to which the frame belongs.
-    pub fn module_base_address(&self) -> Option<*mut c_void> {
-        self.inner.module_base_address()
-    }
+    pub fn module_base_address( & self) -> Option< * mut c_void> { self.inner.module_base_address() }
 }
 
-impl fmt::Debug for Frame {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Frame")
-            .field("ip", &self.ip())
-            .field("symbol_address", &self.symbol_address())
-            .finish()
-    }
+impl fmt::Debug for Frame
+{
+    fn fmt( & self, f: & mut fmt::Formatter<'_>) -> fmt::Result { f.debug_struct("Frame").field("ip", & self.ip()).field("symbol_address", & self.symbol_address()).finish() }
 }
 
 #[cfg(all(target_env = "sgx", target_vendor = "fortanix"))]
-mod sgx_image_base {
-
-    #[cfg(not(feature = "std"))]
-    pub(crate) mod imp {
+mod sgx_image_base
+{
+   #[cfg(not(feature = "std"))]
+    pub (crate) mod imp
+    {
         use core::ffi::c_void;
-        use core::sync::atomic::{AtomicUsize, Ordering::SeqCst};
+        use core::sync::atomic:: { AtomicUsize, Ordering::SeqCst };
 
-        static IMAGE_BASE: AtomicUsize = AtomicUsize::new(0);
+        static IMAGE_BASE: AtomicUsize = AtomicUsize:: new (0);
 
         /// Set the image base address. This is only available for Fortanix SGX
         /// target when the `std` feature is not enabled. This can be used in the
         /// standard library to set the correct base address.
         #[doc(hidden)]
-        pub fn set_image_base(base_addr: *mut c_void) {
-            IMAGE_BASE.store(base_addr as _, SeqCst);
-        }
+        pub fn set_image_base(base_addr: * mut c_void) { IMAGE_BASE.store(base_addr as _, SeqCst); }
 
-        pub(crate) fn get_image_base() -> *mut c_void {
-            IMAGE_BASE.load(SeqCst) as _
-        }
+        pub (crate) fn get_image_base() -> * mut c_void { IMAGE_BASE.load(SeqCst) as _ }
     }
 
-    #[cfg(feature = "std")]
-    mod imp {
-        use core::ffi::c_void;
+   #[cfg(feature = "std")]
+    mod imp { use core::ffi::c_void; pub (crate) fn get_image_base() -> * mut c_void { std::os::fortanix_sgx::mem::image_base() as _ } }
 
-        pub(crate) fn get_image_base() -> *mut c_void {
-            std::os::fortanix_sgx::mem::image_base() as _
-        }
-    }
-
-    pub(crate) use imp::get_image_base;
+    pub (crate) use imp::get_image_base;
 }
 
 #[cfg(all(target_env = "sgx", target_vendor = "fortanix", not(feature = "std")))]
 pub use sgx_image_base::imp::set_image_base;
 
-cfg_if::cfg_if! {
+cfg_if::cfg_if!
+{
     // This needs to come first, to ensure that
     // Miri takes priority over the host platform
-    if #[cfg(miri)] {
-        pub(crate) mod miri;
-        use self::miri::trace as trace_imp;
-        pub(crate) use self::miri::Frame as FrameImp;
-    } else if #[cfg(
-        any(
-            all(
-                unix,
-                not(target_os = "emscripten"),
-                not(all(target_os = "ios", target_arch = "arm")),
-            ),
-            all(
-                target_env = "sgx",
-                target_vendor = "fortanix",
-            ),
+    if #[cfg(miri)] { pub (crate) mod miri; use self::miri::trace as trace_imp; pub (crate) use self::miri::Frame as FrameImp; }
+    else if #
+    [
+        cfg
+        (
+            any
+            (
+                all(unix, not(target_os = "emscripten"), not(all(target_os = "ios", target_arch = "arm")),),
+                all(target_env = "sgx", target_vendor = "fortanix",),
+            )
         )
-    )] {
-        mod libunwind;
-        use self::libunwind::trace as trace_imp;
-        pub(crate) use self::libunwind::Frame as FrameImp;
-    } else if #[cfg(all(windows, not(target_vendor = "uwp")))] {
-        cfg_if::cfg_if! {
-            if #[cfg(any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm64ec"))] {
+    ]
+    { mod libunwind; use self::libunwind::trace as trace_imp; pub (crate) use self::libunwind::Frame as FrameImp; }
+    else if #[cfg(all(windows, not(target_vendor = "uwp")))]
+    {
+        cfg_if::cfg_if!
+        {
+            if #[cfg(any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm64ec"))]
+            {
                 mod win64;
                 use self::win64::trace as trace_imp;
-                pub(crate) use self::win64::Frame as FrameImp;
-            } else if #[cfg(any(target_arch = "x86", target_arch = "arm"))] {
+                pub (crate) use self::win64::Frame as FrameImp;
+            }
+            else if #[cfg(any(target_arch = "x86", target_arch = "arm"))]
+            {
                 mod win32;
                 use self::win32::trace as trace_imp;
-                pub(crate) use self::win32::Frame as FrameImp;
+                pub (crate) use self::win32::Frame as FrameImp;
             }
         }
-    } else {
-        mod noop;
-        use self::noop::trace as trace_imp;
-        pub(crate) use self::noop::Frame as FrameImp;
     }
+    else { mod noop; use self::noop::trace as trace_imp; pub (crate) use self::noop::Frame as FrameImp; }
 }

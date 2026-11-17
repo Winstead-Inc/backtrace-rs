@@ -12,7 +12,4 @@ libc = { version = "0.2", default-features = false }
 
 [dependencies.backtrace]
 path = "../.."
-features = [
-  'libunwind',
-  'std',
-]
+features = ['libunwind', 'std',]

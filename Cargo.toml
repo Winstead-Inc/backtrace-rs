@@ -16,12 +16,7 @@ rust-version = "1.88.0"
 
 [workspace]
 members = ['crates/cpp_smoke_test', 'crates/as-if-std']
-exclude = [
-  'crates/without_debuginfo',
-  'crates/macos_frames_test',
-  'crates/line-tables-only',
-  'crates/debuglink',
-]
+exclude = ['crates/without_debuginfo', 'crates/macos_frames_test', 'crates/line-tables-only', 'crates/debuglink',]
 
 [dependencies]
 cfg-if = "1.0"
@@ -32,9 +27,7 @@ rustc-demangle = "0.1.27"
 serde = { version = "1.0", optional = true, features = ['derive'] }
 
 # Optionally demangle C++ frames' symbols in backtraces.
-cpp_demangle = { default-features = false, version = "0.5.0", optional = true, features = [
-  "alloc",
-] }
+cpp_demangle = { default-features = false, version = "0.5.0", optional = true, features = ["alloc",] }
 
 [target.'cfg(any(windows, target_os = "cygwin"))'.dependencies]
 windows-link = "0.2"

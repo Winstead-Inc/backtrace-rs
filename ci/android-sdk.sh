@@ -62,4 +62,3 @@ echo "no" |
     ./sdk/tools/bin/avdmanager create avd \
         --name "${1}" \
         --package "${image}" | grep -v = || true
-

@@ -3,7 +3,8 @@
 
 set -ex
 
-run() {
+run()
+{
     cargo generate-lockfile --manifest-path crates/debuglink/Cargo.toml
     mkdir -p target crates/debuglink/target debug
     docker build -t backtrace -f ci/docker/$1/Dockerfile ci
@@ -11,7 +12,7 @@ run() {
       --user `id -u`:`id -g` \
       --rm \
       --init \
-      --volume $(dirname $(dirname `which cargo`)):/cargo \
+      --volume $(dirname $ (dirname `which cargo`)) :/cargo \
       --env CARGO_HOME=/cargo \
       --volume `rustc --print sysroot`:/rust:ro \
       --env TARGET=$1 \

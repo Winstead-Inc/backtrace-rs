@@ -16,8 +16,7 @@ $exefile $cratedir
 # Separate debug in same dir
 debugfile1=`dirname $exefile`/debuglink.debug
 objcopy --only-keep-debug $exefile $debugfile1
-strip -g $exefile
-(cd `dirname $exefile` && objcopy --add-gnu-debuglink=debuglink.debug debuglink)
+strip -g $exefile(cd `dirname $exefile` && objcopy --add-gnu-debuglink=debuglink.debug debuglink)
 $exefile $cratedir
 
 # Separate debug in .debug subdir
